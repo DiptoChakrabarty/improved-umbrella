@@ -10,10 +10,8 @@ class RabbitMqConfig:
 class ServerMq:
     def __init__(self,config: RabbitMqConfig) -> None:
         self.config = config
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(
-            host = self.config.host
-        ))
-        self.channel = self.connection.channel
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(self.config.host))
+        self.channel = self.connection.channel()
         self.channel.queue_declare(queue=self.config.queue)
 
     def publish(self,message:str):
@@ -21,5 +19,5 @@ class ServerMq:
             routing_key = self.config.routing_key,
             body = message)
         print(f"Message Sent to RabbitMq with routing key {self.config.routing_key}")
-        self.connection.close()
-        print("Connection Closed")
+        #self.connection.close()
+        #print("Connection Closed")

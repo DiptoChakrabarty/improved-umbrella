@@ -1,7 +1,8 @@
+from flask import config
 import pika
 
 class RabbitMqConfig:
-    def __init__(self,queue:str ="flask" ,host:str ="localhost",routing_key:str ="flask") -> None:
+    def __init__(self,queue:str ="flask" ,host:str ="localhost",routing:str ="flask") -> None:
         self.queue = queue
         self.host = host
         self.routing = routing
@@ -12,7 +13,7 @@ class ReceiveMq:
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(
             host = self.config.host
         ))
-        self.channel = self.connection.channel
+        self.channel = self.connection.channel()
         self.channel.queue_declare(queue=self.config.queue)
     
     def consume(self):
@@ -25,6 +26,14 @@ class ReceiveMq:
     @staticmethod
     def callback(ch,method,properties,body):
         print("Message Received",body)
+
+if __name__=="__main__":
+    try:
+        config = RabbitMqConfig()
+        receiver = ReceiveMq(config)
+        receiver.consume()
+    except KeyboardInterrupt:
+        print("Stopped Program")
 
 
         
