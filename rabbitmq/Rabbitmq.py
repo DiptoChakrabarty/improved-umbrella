@@ -21,3 +21,23 @@ class ServerMq:
         print(f"Message Sent to RabbitMq with routing key {self.config.routing_key}")
         #self.connection.close()
         #print("Connection Closed")
+
+class ReceiveMq:
+    def __init__(self,config: RabbitMqConfig) -> None:
+        self.config = config
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(
+            host = self.config.host
+        ))
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue=self.config.queue)
+    
+    def consume(self):
+        self.channel.basic_consume(queue=self.config.routing_key,
+        on_message_callback=ReceiveMq.callback,
+        auto_ack = True)
+        print("Waiting for messages\n")
+        self.channel.start_consuming()
+
+    @staticmethod
+    def callback(ch,method,properties,body):
+        print("Message Received",body)

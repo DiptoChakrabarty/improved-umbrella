@@ -1,5 +1,5 @@
 from flask import Flask, json,request,jsonify,make_response
-from rabbitmq.Server import RabbitMqConfig,ServerMq
+from rabbitmq.Rabbitmq import RabbitMqConfig,ServerMq
 
 app = Flask(__name__)
 config = RabbitMqConfig()
