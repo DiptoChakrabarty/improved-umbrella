@@ -31,9 +31,9 @@ class ReceiveMq:
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=self.config.queue)
     
-    def consume(self):
+    def consume(self,function: str):
         self.channel.basic_consume(queue=self.config.routing_key,
-        on_message_callback=ReceiveMq.callback,
+        on_message_callback=function,
         auto_ack = True)
         print("Waiting for messages\n")
         self.channel.start_consuming()
@@ -41,3 +41,4 @@ class ReceiveMq:
     @staticmethod
     def callback(ch,method,properties,body):
         print("Message Received",body)
+        return body
