@@ -1,3 +1,4 @@
+import json
 from flask import Flask, json,request,jsonify,make_response
 from rabbitmq.Rabbitmq import RabbitMqConfig,ServerMq
 
@@ -13,9 +14,10 @@ def home():
 @app.post("/")
 def add():
     data = request.get_json()
-    msg = data["msg"]
-    print("Sending to RabbitMq",msg)
-    server.publish(msg)
+    message = json.dumps(data)
+    print(message)
+    print("Sending to RabbitMq")
+    server.publish(message)
     return make_response(jsonify(
         {
             "Msg": "msg received",
