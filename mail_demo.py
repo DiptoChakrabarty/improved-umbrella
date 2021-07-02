@@ -1,6 +1,7 @@
 import os
 import json
 import smtplib
+from itsdangerous import URLSafeTimedSerializer, serializer
 from rabbitmq.Rabbitmq import RabbitMqConfig,ReceiveMq
 from dotenv import load_dotenv
 load_dotenv()
@@ -22,8 +23,14 @@ def mail_func(ch,method,properties,body):
     data = json.loads(body)
     print(data,data["email"])
     subject = "Sample Email"
-    message = f"Subject: {subject}\n\nHello User with Email for confirmation"
+    token = generate_token(data["email"])
+    URL = "http://localhost:5000/confirm/" + token
+    message = f"Subject: {subject}\n\nHello User with Email for confirmation {URL} "
     mail_server.sendmail(USERNAME,data["email"],message)
+
+def generate_token(email: str):
+    serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
+    return serializer.dumps(email,salt=os.environ.get("SALT_KEY"))
 
 if __name__=="__main__":
     try:

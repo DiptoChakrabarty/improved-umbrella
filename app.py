@@ -1,5 +1,6 @@
 import json
 from flask import Flask, json,request,jsonify,make_response
+from itsdangerous import URLSafeTimedSerializer, exc, serializer
 from rabbitmq.Rabbitmq import RabbitMqConfig,ServerMq
 
 app = Flask(__name__)
@@ -24,6 +25,20 @@ def add():
             "Status": 200
         }
     ),200)
+
+@app.get("/confirm/<str:token>")
+def verify(token:str):
+    serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
+    try:
+        email = serializer.loads(
+            token,
+            salt = os.environ.get("SALT_KEY")
+        )
+    except:
+        return False
+    
+    return email
+
 
 
 
