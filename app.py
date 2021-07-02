@@ -1,4 +1,4 @@
-import json
+import json,os
 from flask import Flask, json,request,jsonify,make_response
 from itsdangerous import URLSafeTimedSerializer, exc, serializer
 from rabbitmq.Rabbitmq import RabbitMqConfig,ServerMq
@@ -26,8 +26,8 @@ def add():
         }
     ),200)
 
-@app.get("/confirm/<str:token>")
-def verify(token:str):
+@app.get("/confirm/<token>")
+def verify(token):
     serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
     try:
         email = serializer.loads(

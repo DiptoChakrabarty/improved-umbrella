@@ -11,7 +11,6 @@ receiver = ReceiveMq(config)
 
 USERNAME = os.environ.get("USEREMAIL")
 PASSWORD = os.environ.get("PASSWORD")
-print(USERNAME,PASSWORD)
 mail_server = smtplib.SMTP("smtp.gmail.com",587)
 mail_server.starttls()
 mail_server.login(USERNAME,PASSWORD)
@@ -25,6 +24,7 @@ def mail_func(ch,method,properties,body):
     subject = "Sample Email"
     token = generate_token(data["email"])
     URL = "http://localhost:5000/confirm/" + token
+    print(token,URL)
     message = f"Subject: {subject}\n\nHello User with Email for confirmation {URL} "
     mail_server.sendmail(USERNAME,data["email"],message)
 
